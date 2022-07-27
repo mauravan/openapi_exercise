@@ -32,7 +32,7 @@ java {
 }
 
 tasks.compileJava.dependsOn("openApiGenerateServer")
-tasks.compileJava.dependsOn("openApiGenerateClient")
+//tasks.compileJava.dependsOn("openApiGenerateClient") TODO: uncomment once the task is ready
 
 tasks.withType(JavaCompile) {
 	options.compilerArgs << '-parameters'
@@ -113,22 +113,7 @@ task openApiGenerateClient(type: GenerateTask) {
 	group = 'openapi tools'
 	description = 'generate client'
 
-	generatorName = "java"
-	library = "resttemplate"
-	inputSpec = rootProject.inputSpec
-	outputDir = "${buildDir}/generated-client"
-	apiPackage = "ch.ti8m.client.gateway"
-	modelPackage = "ch.ti8m.connector.client.dto"
-	modelNameSuffix = "Dto"
-
-	configOptions = [
-			dateLibrary             : "java8-localdatetime",
-			booleanGetterPrefix     : "is",
-			developerOrganization   : "ti8m AG",
-			performBeanValidation   : "true",
-			withXml                 : "true",
-			openApiNullable         : "false"
-	]
+	// TODO Create the client configuration using https://openapi-generator.tech/
 }
 
 tasks.named('test') {

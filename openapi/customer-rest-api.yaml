@@ -1,0 +1,321 @@
+openapi: 3.0.0
+
+info:
+  title: Customer API
+  description: Customer REST API Documentation
+  version: '1.0'
+
+servers:
+  - url: http://localhost:8080/
+
+paths:
+  '/customers':
+    post:
+      description: Register a customer
+      requestBody:
+        description: the customer data (identifier must be null)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+            example:
+              username: 'alice'
+              firstName: 'Alice'
+              lastName: 'Smith'
+              email: 'alice@example.org'
+              address:
+                street: '123 Maple Street'
+                city: 'Mill Valley'
+                stateProvince: 'CA'
+                postalCode: '90952'
+                country: 'US'
+              creditCard:
+                type: 'MASTER_CARD'
+                number: '5400000000000005'
+                expirationMonth: 1
+                expirationYear: 2025
+      responses:
+        201:
+          description: customer registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              example:
+                id: 213
+                username: 'alice'
+                firstName: 'Alice'
+                lastName: 'Smith'
+                email: 'alice@example.org'
+                address:
+                  street: '123 Maple Street'
+                  city: 'Mill Valley'
+                  stateProvince: 'CA'
+                  postalCode: '90952'
+                  country: 'US'
+                creditCard:
+                  type: 'MASTER_CARD'
+                  number: '5400000000000005'
+                  expirationMonth: 1
+                  expirationYear: 2025
+        400:
+          description: invalid customer data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                timestamp: '2020-06-01T08:20:00'
+                status: 400
+                error: 'Bad Request'
+                message: 'Missing email address'
+                path: '/customers/123'
+        409:
+          description: customer with same username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                timestamp: '2020-06-01T08:20:00'
+                status: 409
+                error: 'Conflict'
+                message: 'Username ''alice'' already exists'
+                path: '/customers'
+                code: 'USERNAME_ALREADY_EXISTS'
+  '/customers/{id}':
+    get:
+      description: Find a customer
+      parameters:
+        - name: id
+          in: path
+          description: the customer identifier
+          required: true
+          schema:
+            type: string
+          example: 213
+      responses:
+        200:
+          description: customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              example:
+                id: 213
+                username: 'alice'
+                firstName: 'Alice'
+                lastName: 'Smith'
+                email: 'alice@example.org'
+                address:
+                  street: '123 Maple Street'
+                  city: 'Mill Valley'
+                  stateProvince: 'CA'
+                  postalCode: '90952'
+                  country: 'US'
+                creditCard:
+                  type: 'MASTER_CARD'
+                  number: '5400000000000005'
+                  expirationMonth: 1
+                  expirationYear: 2025
+        404:
+          description: customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                timestamp: '2020-06-01T08:20:00'
+                status: 404
+                error: 'Not Found'
+                message: 'Customer 213 not found'
+                path: '/customers/213'
+                code: 'CUSTOMER_NOT_FOUND'
+    put:
+      description: Update a customer
+      parameters:
+        - name: id
+          in: path
+          description: the customer identifier
+          required: true
+          schema:
+            type: integer
+          example: 213
+      requestBody:
+        description: the new customer data (identifier must match path parameter)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+            example:
+              id: 213
+              username: 'alice'
+              firstName: 'Alice'
+              lastName: 'Smith'
+              email: 'smith@example.org'
+              address:
+                street: '123 Maple Street'
+                city: 'Mill Valley'
+                stateProvince: 'CA'
+                postalCode: '90952'
+                country: 'US'
+              creditCard:
+                type: 'MASTER_CARD'
+                number: '5400000000000005'
+                expirationMonth: 1
+                expirationYear: 2025
+      responses:
+        200:
+          description: customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+              example:
+                id: 213
+                username: 'alice'
+                firstName: 'Alice'
+                lastName: 'Smith'
+                email: 'smith@example.org'
+                address:
+                  street: '123 Maple Street'
+                  city: 'Mill Valley'
+                  stateProvince: 'CA'
+                  postalCode: '90952'
+                  country: 'US'
+                creditCard:
+                  type: 'MASTER_CARD'
+                  number: '5400000000000005'
+                  expirationMonth: 1
+                  expirationYear: 2025
+        400:
+          description: invalid customer data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                timestamp: '2020-06-01T08:20:00'
+                status: 400
+                error: 'Bad Request'
+                message: 'Identifier not matching'
+                path: '/customer/213'
+        404:
+          description: customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                timestamp: '2020-06-01T08:20:00'
+                status: 404
+                error: 'Not Found'
+                message: 'Customer 213 not found'
+                path: '/customers/213'
+                code: 'CUSTOMER_NOT_FOUND'
+        409:
+          description: new username not matching existing one
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorInfo'
+              example:
+                timestamp: '2020-06-01T08:20:00'
+                status: 409
+                error: 'Conflict'
+                message: 'Username must not change'
+                path: '/customers/213'
+                code: 'USERNAME_NOT_MATCHING'
+
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+          minLength: 1
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+      required:
+        - firstName
+        - lastName
+        - email
+        - address
+        - creditCard
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        stateProvince:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+      required:
+        - street
+        - city
+        - postalCode
+        - country
+    CreditCard:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [MASTER_CARD, VISA]
+        number:
+          type: string
+          pattern: '\d{16}'
+        expirationMonth:
+          type: integer
+          minimum: 1
+          maximum: 12
+        expirationYear:
+          type: integer
+          minimum: 2000
+      required:
+        - type
+        - number
+        - expirationMonth
+        - expirationYear
+    ErrorInfo:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        code:
+          type: string
+          enum: [CUSTOMER_NOT_FOUND, USERNAME_ALREADY_EXISTS, USERNAME_NOT_MATCHING]
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
